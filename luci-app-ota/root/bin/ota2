@@ -19,8 +19,6 @@ sha256() {
     sha256sum $1 | cut -d' ' -f1
 }
 
-alias fcurl='curl -L --fail --show-error'
-
 download() {
     read_json
     if [ -f /tmp/firmware.img ]; then
@@ -33,9 +31,8 @@ download() {
         fi
     fi
     touch /tmp/firmware.img.progress
-    #fw_download_tool "$FW_URL" -o /tmp/firmware.img.part -k -L -4 > /tmp/firmware.img.progress 2>&1 &
-    fcurl --connect-timeout 5 --progress-bar -o /tmp/firmware.img.part "$FW_URL" 2>>/tmp/firmware.img.progress &    
-	echo "$! $PPID" > /var/run/ota/download.pid
+    fw_download_tool "$FW_URL" -o /tmp/firmware.img.part -k -L -4 > /tmp/firmware.img.progress 2>&1 &
+    echo "$! $PPID" > /var/run/ota/download.pid
     while true; do
         progress=$(grep -c "100.00%" /tmp/firmware.img.progress)
         if [ "$progress" -ge "1" ]; then
